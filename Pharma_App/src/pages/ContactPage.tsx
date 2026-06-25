@@ -1,12 +1,11 @@
 import type { FormEvent } from 'react';
 import { Icon } from '../components/Icon';
-import { PageHero } from '../components/PageHero';
 import type { Translation } from '../types';
 
 export const ContactPage = ({ onSubmit, submitted, t }: { onSubmit: (event: FormEvent<HTMLFormElement>) => void; submitted: boolean; t: Translation }) => (
-  <main>
-    <PageHero title={t.contactPageTitle} text={t.contactPageText} t={t} />
-    <section className="page-section contact-grid">
+  <main className="page-section page-compact">
+    <h1 className="mx-auto mb-8 text-center text-4xl font-extrabold tracking-normal text-[var(--text)] md:text-5xl">{t.contactPageTitle}</h1>
+    <section className="contact-grid">
       <form className="contact-form reveal" onSubmit={onSubmit}>
         {t.formLabels.map((label) => (
           <label className="field" key={label}>

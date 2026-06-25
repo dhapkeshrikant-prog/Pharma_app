@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { AnimatedBackground } from './components/AnimatedBackground';
 import { CtaBanner } from './components/CtaBanner';
 import { Footer } from './components/Footer';
@@ -7,12 +7,11 @@ import { products } from './data/products';
 import { translations } from './i18n/translations';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
+import { HelpPage } from './pages/HelpPage';
 import { HomePage } from './pages/HomePage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { ProductsPage } from './pages/ProductsPage';
-import type { Category, Language, Page, Product, Theme } from './types';
-
-const categories: Category[] = ['All', 'Tablets', 'Capsules', 'Syrups', 'Dry Syrups', 'Nutraceuticals'];
+import type { Language, Page, Product, Theme } from './types';
 
 const App = () => {
   const [theme, setTheme] = useState<Theme>('dark');
@@ -20,8 +19,6 @@ const App = () => {
   const [page, setPage] = useState<Page>('home');
   const [selectedProduct, setSelectedProduct] = useState<Product>(products[0]);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [category, setCategory] = useState<Category>('All');
-  const [search, setSearch] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const t = translations[language];
 
@@ -36,15 +33,6 @@ const App = () => {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
-
-  const filteredProducts = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return products.filter((product) => {
-      const matchesCategory = category === 'All' || product.category === category;
-      const matchesSearch = product.name.toLowerCase().includes(query) || product.composition.toLowerCase().includes(query);
-      return matchesCategory && matchesSearch;
-    });
-  }, [category, search]);
 
   const goTo = (nextPage: Page) => {
     setPage(nextPage);
@@ -87,19 +75,9 @@ const App = () => {
       )}
 
       {page === 'about' && <AboutPage t={t} />}
-      {page === 'products' && (
-        <ProductsPage
-          categories={categories}
-          category={category}
-          filteredProducts={filteredProducts}
-          onCategory={setCategory}
-          onDetail={openDetail}
-          search={search}
-          setSearch={setSearch}
-          t={t}
-        />
-      )}
+      {page === 'products' && <ProductsPage products={products} onDetail={openDetail} t={t} />}
       {page === 'contact' && <ContactPage onSubmit={onSubmit} submitted={submitted} t={t} />}
+      {page === 'help' && <HelpPage onContact={() => goTo('contact')} t={t} />}
       {page === 'detail' && <ProductDetailPage product={selectedProduct} t={t} />}
 
       {page !== 'home' && <CtaBanner onContact={() => goTo('contact')} t={t} />}

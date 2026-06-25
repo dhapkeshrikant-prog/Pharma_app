@@ -1,25 +1,23 @@
-import { PageHero } from '../components/PageHero';
-import { Stats } from '../components/Stats';
 import type { Translation } from '../types';
 
 export const AboutPage = ({ t }: { t: Translation }) => (
-  <main>
-    <PageHero title={t.aboutPageTitle} text={t.aboutPageText} t={t} />
-    <section className="page-section about-grid">
-      {t.aboutSections.map((item, index) => (
-        <article className="info-card reveal" key={item}>
-          <span>{String(index + 1).padStart(2, '0')}</span>
-          <h3>{item}</h3>
-          <p>{t.aboutSectionText}</p>
-        </article>
-      ))}
-    </section>
-    <section className="page-section about-preview reveal">
-      <div className="building-card large">
-        <div className="building-sky" />
-        <div className="building"><span>SUKHAYA</span></div>
+  <main className="page-section page-compact">
+    <h1 className="mx-auto mb-8 text-center text-4xl font-extrabold tracking-normal text-[var(--text)] md:text-5xl">About Us</h1>
+    <section className="about-simple">
+      <div className="about-simple-copy">
+        <p>
+          {t.aboutPageText}
+        </p>
+        <p>
+          SUKHAYA Pharmaceutical focuses on dependable formulations, responsible distribution, and long-term value for healthcare partners. Our work is guided by careful quality practices, clear communication, and a commitment to making trusted medicines accessible.
+        </p>
       </div>
-      <Stats t={t} />
+      <figure className="about-image">
+        <img
+          src="https://images.unsplash.com/photo-1581093458791-9d42e3c5128f?auto=format&fit=crop&w=1200&q=80"
+          alt="Modern pharmaceutical laboratory and quality workspace"
+        />
+      </figure>
     </section>
   </main>
 );

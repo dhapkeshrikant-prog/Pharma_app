@@ -3,17 +3,18 @@ import type { Language, Page, Theme, Translation } from '../types';
 import { Icon } from './Icon';
 import { Logo } from './Logo';
 
-const navItems: { key: keyof Translation['nav']; page: Page; icon: 'home' | 'about' | 'products' | 'contact' }[] = [
+const navItems: { key: keyof Translation['nav']; page: Page; icon: 'home' | 'about' | 'products' | 'contact' | 'help' }[] = [
   { key: 'home', page: 'home', icon: 'home' },
   { key: 'about', page: 'about', icon: 'about' },
   { key: 'products', page: 'products', icon: 'products' },
   { key: 'contact', page: 'contact', icon: 'contact' },
+  { key: 'help', page: 'help', icon: 'help' },
 ];
 
 const languages: { code: Language; label: string }[] = [
   { code: 'en', label: 'English' },
-  { code: 'hi', label: 'हिन्दी' },
-  { code: 'mr', label: 'मराठी' },
+  { code: 'hi', label: 'Hindi' },
+  { code: 'mr', label: 'Marathi' },
 ];
 
 type NavbarProps = {

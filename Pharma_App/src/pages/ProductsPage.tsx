@@ -1,45 +1,24 @@
-import { Icon } from '../components/Icon';
-import { PageHero } from '../components/PageHero';
 import { ProductVisual } from '../components/ProductVisual';
-import type { Category, Product, Translation } from '../types';
+import type { Product, Translation } from '../types';
 
 type ProductsPageProps = {
-  categories: Category[];
-  category: Category;
-  filteredProducts: Product[];
-  onCategory: (category: Category) => void;
+  products: Product[];
   onDetail: (product: Product) => void;
-  search: string;
-  setSearch: (value: string) => void;
   t: Translation;
 };
 
-export const ProductsPage = ({ categories, category, filteredProducts, onCategory, onDetail, search, setSearch, t }: ProductsPageProps) => (
-  <main className="product-page">
-    <PageHero title={t.productsPageTitle} text={t.productsPageText} t={t} />
-    <section className="page-section section-tight">
-      <div className="product-tools reveal">
-        <div className="search-box">
-          <Icon name="search" />
-          <input onChange={(event) => setSearch(event.target.value)} placeholder={t.searchPlaceholder} value={search} />
-        </div>
-        <div className="category-tabs">
-          {categories.map((item) => (
-            <button className={item === category ? 'active' : ''} key={item} onClick={() => onCategory(item)} type="button">{item}</button>
-          ))}
-        </div>
-      </div>
-      <div className="product-grid reveal delay-a">
-        {filteredProducts.map((product) => (
-          <article className="product-card" key={product.name}>
-            <ProductVisual compact product={product} />
-            <h3>{product.name}</h3>
-            <p className="composition">{product.composition}</p>
-            <p>{product.description}</p>
-            <button onClick={() => onDetail(product)} type="button">{t.viewDetails}</button>
-          </article>
-        ))}
-      </div>
+export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => (
+  <main className="product-page page-section page-compact">
+    <h1 className="mx-auto mb-8 text-center text-4xl font-extrabold tracking-normal text-[var(--text)] md:text-5xl">{t.productsPageTitle}</h1>
+    <section className="product-grid reveal">
+      {products.map((product) => (
+        <article className="product-card" key={product.name}>
+          <ProductVisual compact product={product} />
+          <h3>{product.name}</h3>
+          <p className="composition">{product.composition}</p>
+          <button onClick={() => onDetail(product)} type="button">{t.viewDetails}</button>
+        </article>
+      ))}
     </section>
   </main>
 );
