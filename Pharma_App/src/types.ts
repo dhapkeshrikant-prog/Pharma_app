@@ -1,0 +1,57 @@
+export type Theme = 'light' | 'dark';
+export type Language = 'en' | 'hi' | 'mr';
+export type Page = 'home' | 'about' | 'products' | 'contact' | 'detail';
+export type Category = 'All' | 'Tablets' | 'Capsules' | 'Syrups' | 'Dry Syrups' | 'Nutraceuticals';
+
+export type Product = {
+  name: string;
+  category: Exclude<Category, 'All'>;
+  composition: string;
+  description: string;
+  color: string;
+  accent: string;
+  image?: string;
+  imageAlt?: string;
+};
+
+export type Translation = {
+  nav: Record<'home' | 'about' | 'products' | 'contact', string>;
+  languageLabel: string;
+  heroBadge: string;
+  heroTitle: string;
+  heroText: string;
+  exploreProducts: string;
+  contactUs: string;
+  highlights: string[][];
+  featuredEyebrow: string;
+  featuredTitle: string;
+  viewDetails: string;
+  aboutEyebrow: string;
+  aboutTitle: string;
+  aboutText: string;
+  learnMore: string;
+  stats: string[][];
+  pageHeroEyebrow: string;
+  aboutPageTitle: string;
+  aboutPageText: string;
+  aboutSections: string[];
+  aboutSectionText: string;
+  productsPageTitle: string;
+  productsPageText: string;
+  searchPlaceholder: string;
+  detail: Record<'composition' | 'indications' | 'benefits' | 'dosage' | 'storage' | 'packaging' | 'inquiryTitle' | 'inquiryText' | 'sendInquiry', string>;
+  contactPageTitle: string;
+  contactPageText: string;
+  formLabels: string[];
+  submitInquiry: string;
+  successMessage: string;
+  mapLabel: string;
+  ctaEyebrow: string;
+  ctaTitle: string;
+  footerText: string;
+  quickLinks: string;
+  productCategories: string;
+  newsletter: string;
+  newsletterText: string;
+  subscribe: string;
+};
