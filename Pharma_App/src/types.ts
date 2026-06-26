@@ -1,6 +1,6 @@
 export type Theme = 'light' | 'dark';
 export type Language = 'en' | 'hi' | 'mr';
-export type Page = 'home' | 'about' | 'products' | 'contact' | 'detail';
+export type Page = 'home' | 'about' | 'products' | 'contact' | 'help' | 'detail';
 export type Category = 'All' | 'Tablets' | 'Capsules' | 'Syrups' | 'Dry Syrups' | 'Nutraceuticals';
 
 export type Product = {
@@ -15,7 +15,7 @@ export type Product = {
 };
 
 export type Translation = {
-  nav: Record<'home' | 'about' | 'products' | 'contact', string>;
+  nav: Record<'home' | 'about' | 'products' | 'contact' | 'help', string>;
   languageLabel: string;
   heroBadge: string;
   heroTitle: string;
