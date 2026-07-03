@@ -6,8 +6,16 @@ export type Category = 'All' | 'Tablets' | 'Capsules' | 'Syrups' | 'Dry Syrups' 
 export type Product = {
   name: string;
   category: Exclude<Category, 'All'>;
+  categorySlug?: string;
+  slug?: string;
   composition: string;
+  ingredients: string[];
   description: string;
+  indications: string;
+  benefits: string;
+  dosage: string;
+  storage: string;
+  packaging: string;
   color: string;
   accent: string;
   image?: string;
@@ -39,7 +47,7 @@ export type Translation = {
   productsPageTitle: string;
   productsPageText: string;
   searchPlaceholder: string;
-  detail: Record<'composition' | 'indications' | 'benefits' | 'dosage' | 'storage' | 'packaging' | 'inquiryTitle' | 'inquiryText' | 'sendInquiry', string>;
+  detail: Record<'composition' | 'ingredients' | 'indications' | 'benefits' | 'dosage' | 'storage' | 'packaging' | 'inquiryTitle' | 'inquiryText' | 'sendInquiry', string>;
   contactPageTitle: string;
   contactPageText: string;
   formLabels: string[];

@@ -1,10 +1,10 @@
-import { PointerEvent, useState } from 'react';
-import { products } from '../data/products';
-import type { Product, Translation } from '../types';
+import { PointerEvent, ReactNode, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CtaBanner } from '../components/CtaBanner';
 import { Icon } from '../components/Icon';
 import { ProductVisual } from '../components/ProductVisual';
-import { Stats } from '../components/Stats';
-import { CtaBanner } from '../components/CtaBanner';
+import { products } from '../data/products';
+import type { Product, Translation } from '../types';
 
 type HomePageProps = {
   activeSlide: number;
@@ -16,14 +16,61 @@ type HomePageProps = {
   t: Translation;
 };
 
+const FadeIn = ({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) => (
+  <motion.div
+    className={className}
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-70px' }}
+    transition={{ duration: 0.55, delay, ease: 'easeOut' }}
+  >
+    {children}
+  </motion.div>
+);
+
 export const HomePage = ({ activeSlide, onAbout, onContact, onDetail, onExplore, onSlide, t }: HomePageProps) => (
-  <>
+  <main className="home-page w-full overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <OpeningScene />
     <Hero activeSlide={activeSlide} onContact={onContact} onExplore={onExplore} onSlide={onSlide} t={t} />
-    <Highlights t={t} />
+    <StatsBand />
+    <ProductRange onExplore={onExplore} />
     <FeaturedProducts onDetail={onDetail} t={t} />
-    <AboutPreview onAbout={onAbout} t={t} />
+    <TrustGrid onAbout={onAbout} t={t} />
+    <Process />
+    <Testimonials />
     <CtaBanner onContact={onContact} t={t} />
-  </>
+  </main>
+);
+
+const OpeningScene = () => (
+  <motion.div
+    className="home-opening"
+    initial={{ opacity: 1 }}
+    animate={{ opacity: 0, pointerEvents: 'none' }}
+    transition={{ delay: 1.8, duration: 0.65, ease: 'easeInOut' }}
+  >
+    <motion.div
+      className="home-shop"
+      initial={{ y: 28, scale: 0.94, opacity: 0 }}
+      animate={{ y: 0, scale: 1, opacity: 1 }}
+      transition={{ duration: 0.75, ease: 'easeOut' }}
+    >
+      <div className="home-shop-sign">
+        <span>+</span>
+        <strong>SUKHAYA MEDICAL</strong>
+      </div>
+      <div className="home-shop-awning" />
+      <div className="home-shop-window">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="home-shop-door" />
+    </motion.div>
+    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}>
+      Opening trusted healthcare solutions
+    </motion.p>
+  </motion.div>
 );
 
 const Hero = ({ activeSlide, onContact, onExplore, onSlide, t }: {
@@ -33,11 +80,12 @@ const Hero = ({ activeSlide, onContact, onExplore, onSlide, t }: {
   onSlide: (index: number) => void;
   t: Translation;
 }) => {
-  const heroProducts = products.slice(0, 5);
+  const heroProducts = products.slice(0, 6);
+  const currentIndex = activeSlide % heroProducts.length;
+  const currentProduct = heroProducts[currentIndex];
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const currentProduct = heroProducts[activeSlide];
-  const previous = () => onSlide(activeSlide === 0 ? heroProducts.length - 1 : activeSlide - 1);
-  const next = () => onSlide((activeSlide + 1) % heroProducts.length);
+  const previous = () => onSlide(currentIndex === 0 ? heroProducts.length - 1 : currentIndex - 1);
+  const next = () => onSlide((currentIndex + 1) % heroProducts.length);
 
   const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
     if (touchStart === null) return;
@@ -50,92 +98,240 @@ const Hero = ({ activeSlide, onContact, onExplore, onSlide, t }: {
   };
 
   return (
-    <section className="hero page-section" id="home">
-      <div className="hero-copy reveal">
-        <p className="eyebrow">{t.heroBadge}</p>
-        <h1>{t.heroTitle}</h1>
-        <p className="hero-text">{t.heroText}</p>
-        <div className="hero-actions">
-          <button className="primary-button" onClick={onExplore} type="button">{t.exploreProducts} <Icon name="arrow" /></button>
-          <button className="secondary-button" onClick={onContact} type="button">{t.contactUs}</button>
-        </div>
+    <section className="home-hero relative min-h-[720px] px-4 pb-20 pt-10 md:pt-14" id="home">
+      <div className="home-medical-bg" aria-hidden="true">
+        <span className="home-dna" />
+        <span className="home-pill home-pill-a" />
+        <span className="home-pill home-pill-b" />
+        <span className="home-molecule" />
       </div>
 
-      <div className="hero-stage reveal delay-a" onPointerDown={(event) => setTouchStart(event.clientX)} onPointerUp={onPointerUp}>
-        <div className="medical-grid" />
-        <div className="hero-orbit one" />
-        <div className="hero-orbit two" />
-        <div className="product-slider" style={{ transform: `translateX(-${activeSlide * 100}%)` }}>
-          {heroProducts.map((product) => (
-            <div className="hero-slide" key={product.name}>
-              <ProductVisual product={product} />
-            </div>
-          ))}
-        </div>
-        <div className="stage-product left"><ProductVisual compact product={heroProducts[(activeSlide + 1) % heroProducts.length]} /></div>
-        <div className="stage-product right"><ProductVisual compact product={heroProducts[(activeSlide + 2) % heroProducts.length]} /></div>
-        <button className="slider-arrow prev" onClick={previous} type="button" aria-label="Previous product">‹</button>
-        <button className="slider-arrow next" onClick={next} type="button" aria-label="Next product">›</button>
-        <div className="product-caption">
-          <strong>{currentProduct.name}</strong>
-          <span>{currentProduct.category} · Medicine showcase</span>
-        </div>
-        <div className="slide-dots">
-          {heroProducts.map((product, index) => <span className={activeSlide === index ? 'active' : ''} key={product.name} />)}
-        </div>
+      <div className="relative z-10 mx-auto grid max-w-[1480px] items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
+        <motion.div
+          className="max-w-2xl pt-8 lg:pt-12"
+          initial={{ opacity: 0, x: -28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.25, duration: 0.7, ease: 'easeOut' }}
+        >
+          <span className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-4 py-2 text-xs font-black uppercase tracking-wide text-sky-800 ring-1 ring-sky-200 dark:bg-sky-950 dark:text-sky-200 dark:ring-sky-800">
+            <Icon name="check" className="h-4 w-4" /> WHO-GMP Certified Company
+          </span>
+          <h1 className="mt-7 text-4xl font-black leading-[1.05] text-slate-950 md:text-6xl lg:text-7xl dark:text-white">
+            Quality Medicines, <span className="text-blue-600">Healthier</span> Lives.
+          </h1>
+          <p className="mt-6 max-w-xl text-base font-medium leading-8 text-slate-600 md:text-lg dark:text-slate-300">
+            We are committed to manufacturing and delivering world-class pharmaceutical products that improve lives and build a healthier tomorrow.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <button className="inline-flex items-center gap-3 rounded-xl bg-blue-700 px-7 py-4 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition hover:-translate-y-1 hover:bg-blue-600" onClick={onExplore} type="button">
+              {t.exploreProducts} <Icon name="arrow" className="h-5 w-5" />
+            </button>
+            <button className="inline-flex items-center gap-3 rounded-xl bg-white px-7 py-4 text-sm font-black text-slate-900 shadow-lg ring-1 ring-slate-200 transition hover:-translate-y-1 hover:text-blue-700 dark:bg-slate-900 dark:text-white dark:ring-slate-800" onClick={onContact} type="button">
+              {t.contactUs} <Icon name="contact" className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="mt-10 grid max-w-xl grid-cols-2 gap-3 rounded-2xl bg-white/85 p-4 shadow-xl shadow-slate-200/70 ring-1 ring-slate-200 backdrop-blur md:grid-cols-4 dark:bg-slate-900/85 dark:shadow-none dark:ring-slate-800">
+            {['WHO-GMP Certified', 'ISO 9001:2015', 'Quality Assurance', 'Timely Delivery'].map((item) => (
+              <div className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200" key={item}>
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                  <Icon name="check" className="h-4 w-4" />
+                </span>
+                {item}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="relative min-h-[470px] md:min-h-[610px]"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4, duration: 0.7, ease: 'easeOut' }}
+          onPointerDown={(event) => setTouchStart(event.clientX)}
+          onPointerUp={onPointerUp}
+        >
+          <button className="home-slider-btn left-0 md:left-3" onClick={previous} type="button" aria-label="Previous product">
+            <Icon name="arrow" className="rotate-180" />
+          </button>
+          <div className="home-product-stage">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentProduct.slug}
+                className="home-product-box"
+                initial={{ opacity: 0, rotateY: -20, y: 30 }}
+                animate={{ opacity: 1, rotateY: 0, y: 0 }}
+                exit={{ opacity: 0, rotateY: 20, y: -10 }}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+              >
+                {currentProduct.image ? (
+                  <img src={currentProduct.image} alt={currentProduct.imageAlt} />
+                ) : (
+                  <ProductVisual compact product={currentProduct} />
+                )}
+                <div className="home-product-label">
+                  <strong>{currentProduct.name}</strong>
+                  <span>{currentProduct.composition}</span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <button className="home-slider-btn right-0 md:right-3" onClick={next} type="button" aria-label="Next product">
+            <Icon name="arrow" />
+          </button>
+          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-2">
+            {heroProducts.map((product, idx) => (
+              <button
+                aria-label={`Show ${product.name}`}
+                className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-blue-700' : 'w-2 bg-slate-300 dark:bg-slate-700'}`}
+                key={product.slug}
+                onClick={() => onSlide(idx)}
+                type="button"
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
-const Highlights = ({ t }: { t: Translation }) => (
-  <section className="highlight-strip reveal">
-    {t.highlights.map(([title, text]) => (
-      <article className="highlight-card" key={title}>
-        <span><Icon name="check" /></span>
-        <div>
-          <h3>{title}</h3>
-          <p>{text}</p>
+const StatsBand = () => (
+  <FadeIn className="relative z-20 mx-auto -mt-12 max-w-[1240px] px-4">
+    <div className="grid gap-4 rounded-2xl bg-white p-5 shadow-2xl shadow-slate-200/80 ring-1 ring-slate-200 md:grid-cols-4 dark:bg-slate-900 dark:shadow-none dark:ring-slate-800">
+      {[
+        ['15+', 'Years of Experience', 'in Pharma Industry'],
+        ['200+', 'Quality Products', 'Manufactured'],
+        ['25+', 'Countries', 'Global Presence'],
+        ['1M+', 'Happy Patients', 'Every Year'],
+      ].map(([value, title, text], idx) => (
+        <div className="flex items-center gap-4 border-slate-100 p-3 md:border-r last:border-r-0 dark:border-slate-800" key={title}>
+          <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full text-lg font-black ${idx === 1 ? 'bg-orange-100 text-orange-600' : idx === 2 ? 'bg-emerald-100 text-emerald-600' : idx === 3 ? 'bg-violet-100 text-violet-600' : 'bg-blue-100 text-blue-700'}`}>
+            {value.replace('+', '')}
+          </span>
+          <div>
+            <strong className="block text-3xl font-black text-blue-700 dark:text-blue-300">{value}</strong>
+            <span className="block text-sm font-black text-slate-900 dark:text-white">{title}</span>
+            <small className="text-xs font-semibold text-slate-500">{text}</small>
+          </div>
         </div>
-      </article>
-    ))}
+      ))}
+    </div>
+  </FadeIn>
+);
+
+const ProductRange = ({ onExplore }: { onExplore: () => void }) => (
+  <section className="mx-auto max-w-[1240px] px-4 py-14">
+    <SectionTitle eyebrow="Our Product Range" title="Healthcare Solutions for Every Need" />
+    <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {[
+        ['Antibiotics', 'Powerful infection fighters'],
+        ['Pain Killer', 'Fast relief from pain and fever'],
+        ['Calcium', 'Stronger bones, better life'],
+        ['Protein & Nutritional', 'Complete nutrition for all'],
+        ['PPI', 'Gastric and acid management'],
+        ['All Products', 'View complete range'],
+      ].map(([title, text], idx) => (
+        <button className="home-range-card" key={title} onClick={idx === 5 ? onExplore : undefined} type="button">
+          <span>{['+', 'Rx', 'Ca', 'N', 'P', '::'][idx]}</span>
+          <strong>{title}</strong>
+          <small>{text}</small>
+        </button>
+      ))}
+    </div>
   </section>
 );
 
 const FeaturedProducts = ({ onDetail, t }: { onDetail: (product: Product) => void; t: Translation }) => (
-  <section className="page-section section-tight">
-    <div className="section-heading reveal">
-      <p className="eyebrow">{t.featuredEyebrow}</p>
-      <h2>{t.featuredTitle}</h2>
+  <section className="mx-auto max-w-[1400px] px-4 pb-14">
+    <div className="rounded-2xl bg-white p-5 shadow-xl shadow-slate-200/70 ring-1 ring-slate-200 dark:bg-slate-900 dark:shadow-none dark:ring-slate-800">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3 text-center md:text-left">
+        <SectionTitle eyebrow={t.featuredEyebrow} title="Our Best Selling Medicines" />
+        <button className="inline-flex items-center gap-2 text-sm font-black text-blue-700 dark:text-blue-300" type="button">
+          View All Products <Icon name="arrow" className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {products.slice(0, 6).map((product, idx) => (
+          <FadeIn delay={idx * 0.04} key={product.slug}>
+            <article className="home-feature-card">
+              <div className="home-feature-image">
+                {product.image ? <img src={product.image} alt={product.imageAlt} /> : <ProductVisual compact product={product} />}
+              </div>
+              <h3>{product.name}</h3>
+              <p>{product.composition}</p>
+              <button onClick={() => onDetail(product)} type="button">
+                {t.viewDetails} <Icon name="arrow" className="h-4 w-4" />
+              </button>
+            </article>
+          </FadeIn>
+        ))}
+      </div>
     </div>
-    <div className="product-grid reveal delay-a">
-      {products.slice(0, 6).map((product) => (
-        <article className="product-card" key={product.name}>
-          <ProductVisual compact product={product} />
-          <h3>{product.name}</h3>
-          <p className="composition">{product.composition}</p>
-          <p>{product.description}</p>
-          <button onClick={() => onDetail(product)} type="button">{t.viewDetails}</button>
+  </section>
+);
+
+const TrustGrid = ({ onAbout, t }: { onAbout: () => void; t: Translation }) => (
+  <section className="mx-auto grid max-w-[1240px] gap-6 px-4 py-10 lg:grid-cols-[0.9fr_1.6fr]">
+    <FadeIn>
+      <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-300">{t.aboutEyebrow}</p>
+      <h2 className="mt-3 text-3xl font-black leading-tight text-slate-950 md:text-4xl dark:text-white">We Care for Your Health and Trust</h2>
+      <p className="mt-5 text-sm font-medium leading-7 text-slate-600 dark:text-slate-300">{t.aboutText}</p>
+      <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20" onClick={onAbout} type="button">
+        {t.learnMore} <Icon name="arrow" className="h-4 w-4" />
+      </button>
+    </FadeIn>
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {['Quality Assurance', 'Advanced Technology', 'Expert Team', 'Customer Focused'].map((item, idx) => (
+        <FadeIn delay={idx * 0.06} key={item}>
+          <div className="home-trust-card">
+            <span><Icon name={idx === 1 ? 'products' : idx === 3 ? 'contact' : 'check'} /></span>
+            <strong>{item}</strong>
+            <small>{['Strict quality control at every step', 'Modern manufacturing facilities', 'Experienced professionals committed to care', 'Building long-term relationships'][idx]}</small>
+          </div>
+        </FadeIn>
+      ))}
+    </div>
+  </section>
+);
+
+const Process = () => (
+  <section className="mx-auto max-w-[1240px] px-4 py-12">
+    <SectionTitle eyebrow="Our Manufacturing Process" title="From Raw Material to Quality Medicine" />
+    <div className="home-process mt-10">
+      {['Raw Material Selection', 'Quality Testing', 'Advanced Manufacturing', 'Packaging', 'Quality Check', 'Timely Delivery'].map((item, idx) => (
+        <div className="home-process-step" key={item}>
+          <span>{idx + 1}</span>
+          <strong>{item}</strong>
+          <small>{['High quality raw materials only', 'Strict testing at all stages', 'State-of-the-art machines', 'Safe, hygienic and secure packaging', 'Final quality verification', 'On-time delivery across the globe'][idx]}</small>
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+const Testimonials = () => (
+  <section className="mx-auto max-w-[1240px] px-4 pb-12">
+    <SectionTitle eyebrow="What Our Partners Say" title="Trusted by Healthcare Professionals" />
+    <div className="mt-8 grid gap-4 md:grid-cols-3">
+      {[
+        ['Dr. Rajesh Sharma', 'Healthcare Professional', 'Sukhaya Pharmaceuticals has been our trusted partner for years. Their quality and commitment are exceptional.'],
+        ['Dr. Anjali Verma', 'MBBS, MD', 'Their wide range of products and timely delivery help us serve our patients better every day.'],
+        ['PharmaCare Distributors', 'Business Partner', 'Excellent quality medicines with affordable pricing. Highly recommended for all distributors.'],
+      ].map(([name, role, quote]) => (
+        <article className="home-testimonial" key={name}>
+          <b>``</b>
+          <p>{quote}</p>
+          <strong>{name}</strong>
+          <small>{role}</small>
         </article>
       ))}
     </div>
   </section>
 );
 
-const AboutPreview = ({ onAbout, t }: { onAbout: () => void; t: Translation }) => (
-  <section className="about-preview page-section reveal">
-    <div>
-      <p className="eyebrow">{t.aboutEyebrow}</p>
-      <h2>{t.aboutTitle}</h2>
-      <p>{t.aboutText}</p>
-      <button className="primary-button" onClick={onAbout} type="button">{t.learnMore} <Icon name="arrow" /></button>
-    </div>
-    <div className="building-card">
-      <div className="building-sky" />
-      <div className="building">
-        <span>SUKHAYA</span>
-      </div>
-    </div>
-    <Stats t={t} />
-  </section>
+const SectionTitle = ({ eyebrow, title }: { eyebrow: string; title: string }) => (
+  <div className="mx-auto max-w-2xl text-center">
+    <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-300">{eyebrow}</p>
+    <h2 className="mt-2 text-2xl font-black text-slate-950 md:text-3xl dark:text-white">{title}</h2>
+  </div>
 );

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fed7aa"/>
+      <stop offset="100%" style="stop-color:#ffedd5"/>
+    </linearGradient>
+    <linearGradient id="strip5" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ea580c"/>
+      <stop offset="100%" style="stop-color:#f97316"/>
+    </linearGradient>
+  </defs>
+  <rect x="20" y="40" width="160" height="120" rx="14" fill="url(#bg5)" stroke="#ea580c" stroke-width="2.5"/>
+  <rect x="20" y="40" width="160" height="36" rx="14" fill="url(#strip5)"/>
+  <rect x="20" y="64" width="160" height="12" fill="url(#strip5)"/>
+  <text x="100" y="66" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="12" font-weight="900" fill="white" letter-spacing="0.5">DAZER-CV</text>
+  <!-- Tablet-capsule combo look: oval tablets -->
+  <rect x="36" y="92" width="34" height="20" rx="10" fill="#ea580c" opacity="0.9"/>
+  <rect x="83" y="92" width="34" height="20" rx="10" fill="#ea580c" opacity="0.9"/>
+  <rect x="130" y="92" width="34" height="20" rx="10" fill="#ea580c" opacity="0.9"/>
+  <rect x="36" y="122" width="34" height="20" rx="10" fill="#c2410c" opacity="0.85"/>
+  <rect x="83" y="122" width="34" height="20" rx="10" fill="#c2410c" opacity="0.85"/>
+  <rect x="130" y="122" width="34" height="20" rx="10" fill="#c2410c" opacity="0.85"/>
+  <!-- Score line -->
+  <line x1="36" y1="102" x2="70" y2="102" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <line x1="83" y1="102" x2="117" y2="102" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <line x1="130" y1="102" x2="164" y2="102" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <line x1="36" y1="132" x2="70" y2="132" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <line x1="83" y1="132" x2="117" y2="132" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <line x1="130" y1="132" x2="164" y2="132" stroke="white" stroke-width="1.5" opacity="0.7"/>
+  <text x="100" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#9a3412">Cefpodoxime 200mg + Clavulanic Acid 125mg</text>
+</svg>
