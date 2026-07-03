@@ -32,6 +32,7 @@ const en: Translation = {
   searchPlaceholder: 'Search product name or composition',
   detail: {
     composition: 'Composition',
+    ingredients: 'Ingredients',
     indications: 'Use only as directed by a registered medical practitioner.',
     benefits: 'Quality formulation, reliable packaging, and patient-centered value.',
     dosage: 'As advised by physician. Do not self-medicate.',
@@ -83,6 +84,7 @@ export const translations: Record<Language, Translation> = {
     searchPlaceholder: 'उत्पाद नाम या संरचना खोजें',
     detail: {
       composition: 'संरचना',
+      ingredients: 'सामग्री',
       indications: 'केवल पंजीकृत डॉक्टर की सलाह के अनुसार उपयोग करें।',
       benefits: 'गुणवत्तापूर्ण फॉर्मूलेशन, भरोसेमंद पैकेजिंग और मरीज-केंद्रित मूल्य।',
       dosage: 'डॉक्टर की सलाह के अनुसार। स्वयं दवा न लें।',
@@ -128,6 +130,7 @@ export const translations: Record<Language, Translation> = {
     searchPlaceholder: 'उत्पादन नाव किंवा रचना शोधा',
     detail: {
       composition: 'रचना',
+      ingredients: 'घटक',
       indications: 'फक्त नोंदणीकृत डॉक्टरांच्या सल्ल्यानुसार वापरा.',
       benefits: 'गुणवत्तापूर्ण फॉर्म्युलेशन, विश्वासार्ह पॅकेजिंग आणि रुग्ण-केंद्रित मूल्य.',
       dosage: 'डॉक्टरांच्या सल्ल्यानुसार. स्वतः औषध घेऊ नका.',

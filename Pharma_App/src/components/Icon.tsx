@@ -1,6 +1,6 @@
 type IconName = 'home' | 'about' | 'products' | 'contact' | 'help' | 'globe' | 'moon' | 'sun' | 'arrow' | 'check' | 'search';
 
-export const Icon = ({ name }: { name: IconName }) => {
+export const Icon = ({ name, className = '' }: { name: IconName; className?: string }) => {
   const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   const paths = {
     home: <><path d="m3 11 9-8 9 8" /><path d="M5 10v10h14V10" /><path d="M10 20v-6h4v6" /></>,
@@ -16,5 +16,5 @@ export const Icon = ({ name }: { name: IconName }) => {
     search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3-3" /></>,
   };
 
-  return <svg aria-hidden="true" {...common}>{paths[name]}</svg>;
+  return <svg aria-hidden="true" className={className} {...common}>{paths[name]}</svg>;
 };
