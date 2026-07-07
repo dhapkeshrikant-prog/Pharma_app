@@ -1,11 +1,10 @@
 export type Theme = 'light' | 'dark';
 export type Language = 'en' | 'hi' | 'mr';
-export type Page = 'home' | 'about' | 'products' | 'contact' | 'help' | 'detail';
-export type Category = 'All' | 'Tablets' | 'Capsules' | 'Syrups' | 'Dry Syrups' | 'Nutraceuticals';
+export type Page = 'home' | 'about' | 'products' | 'contact' | 'help' | 'blog' | 'detail';
 
 export type Product = {
   name: string;
-  category: Exclude<Category, 'All'>;
+  category: string;
   categorySlug?: string;
   slug?: string;
   composition: string;
@@ -23,7 +22,7 @@ export type Product = {
 };
 
 export type Translation = {
-  nav: Record<'home' | 'about' | 'products' | 'contact' | 'help', string>;
+  nav: Record<'home' | 'about' | 'products' | 'contact' | 'help' | 'blog', string>;
   languageLabel: string;
   heroBadge: string;
   heroTitle: string;

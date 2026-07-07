@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductVisual } from '../components/ProductVisual';
 import type { Product, Translation } from '../types';
@@ -9,18 +9,16 @@ type ProductsPageProps = {
   t: Translation;
 };
 
-const CATEGORIES = [
-  { label: 'All', slug: null },
-  { label: 'Tablets', slug: 'tablets' },
-  { label: 'Capsules', slug: 'capsules' },
-  { label: 'Syrups', slug: 'syrups' },
-  { label: 'Dry Syrups', slug: 'dry-syrups' },
-  { label: 'Nutraceuticals', slug: 'nutraceuticals' },
-];
-
 export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
   const [filter, setFilter] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const categories = useMemo(() => [
+    { label: 'All', slug: null as string | null },
+    ...Array.from(new Map(products.map((product) => [product.categorySlug ?? product.category, {
+      label: product.category,
+      slug: product.categorySlug ?? product.category.toLowerCase().replace(/\s+/g, '-'),
+    }])).values()).sort((a, b) => a.label.localeCompare(b.label)),
+  ], [products]);
 
   useEffect(() => {
     const applyLocation = () => {
@@ -54,20 +52,15 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
 
   const filtered = products.filter((p) => {
     const matchesCategory = !filter || p.categorySlug?.toLowerCase() === filter || p.slug?.toLowerCase() === filter;
-    const matchesSearch = !search || 
-      p.name.toLowerCase().includes(search) ||
-      p.composition.toLowerCase().includes(search) ||
-      p.category.toLowerCase().includes(search);
+    const query = search.toLowerCase();
+    const matchesSearch = !query ||
+      p.name.toLowerCase().includes(query) ||
+      p.composition.toLowerCase().includes(query) ||
+      p.category.toLowerCase().includes(query) ||
+      p.indications.toLowerCase().includes(query) ||
+      p.ingredients.some((ingredient) => ingredient.toLowerCase().includes(query));
     return matchesCategory && matchesSearch;
   });
-
-  // If the search term matches a product name exactly, open detail
-  if (search) {
-    const exact = products.find((p) => p.name.toLowerCase() === search || (p.slug && p.slug === search));
-    if (exact) {
-      onDetail(exact);
-    }
-  }
 
   const clearFilters = () => {
     setFilter(null);
@@ -111,7 +104,7 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
           transition={{ delay: 0.15 }}
           className="text-slate-500 dark:text-slate-400 text-lg max-w-xl mx-auto"
         >
-          Explore our complete pharmaceutical range, built for reliable care.
+          Explore our catalogue products with instant search and generated categories.
         </motion.p>
       </div>
 
@@ -126,8 +119,8 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value.toLowerCase())}
-            placeholder="Search by name or composition…"
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, category, composition or uses..."
             className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-base font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all dark:text-white shadow-sm"
           />
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
@@ -158,7 +151,7 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
         transition={{ delay: 0.25 }}
         className="flex flex-wrap items-center justify-center gap-2 mb-10"
       >
-        {CATEGORIES.map((cat) => {
+        {categories.map((cat) => {
           const isActive = filter === cat.slug;
           return (
             <button
@@ -205,7 +198,7 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
           >
             <p className="inline-flex items-center gap-2 px-4 py-2 bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 rounded-full text-sm font-bold border border-sky-200 dark:border-sky-800">
               {filtered.length} product{filtered.length !== 1 ? 's' : ''} found
-              {filter && ` in "${CATEGORIES.find(c => c.slug === filter)?.label}"`}
+              {filter && ` in "${categories.find(c => c.slug === filter)?.label ?? filter}"`}
               {search && ` matching "${search}"`}
             </p>
             <button

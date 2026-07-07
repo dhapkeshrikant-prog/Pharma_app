@@ -62,17 +62,19 @@ export const ProductDetailPage = ({ product, t }: { product: Product; t: Transla
               <p className="text-sky-600 dark:text-sky-400 font-semibold">{product.composition}</p>
             </article>
             
-            <article className="py-6">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{t.detail.ingredients}</h3>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {product.ingredients.map((ingredient) => (
-                  <li key={ingredient} className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0"></span>
-                    {ingredient}
-                  </li>
-                ))}
-              </ul>
-            </article>
+            {product.ingredients.length > 0 && (
+              <article className="py-6">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{t.detail.ingredients}</h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {product.ingredients.map((ingredient) => (
+                    <li key={ingredient} className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0"></span>
+                      {ingredient}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            )}
             
             {[
               [t.detail.indications, product.indications],

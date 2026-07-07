@@ -202,7 +202,8 @@ export const ContactPage = ({
           </div>
         </div>
 
-        {/* Google Maps Embed */}
+        {/* Google Maps Embed - commented for now. Re-enable when client confirms map requirement. */}
+        {false && (
         <div className="rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-xl flex-1 min-h-[280px] relative">
           <iframe
             title="Sukhaya Pharmaceutical Location"
@@ -224,6 +225,7 @@ export const ContactPage = ({
             Open in Google Maps →
           </a>
         </div>
+        )}
       </motion.div>
     </div>
   </main>

@@ -1,0 +1,451 @@
+.scene {
+  --accent: #0ea5e9;
+  --rx: 0deg;
+  --ry: 0deg;
+  --px: 0;
+  --py: 0;
+  width: min(720px, 100%);
+  height: 520px;
+  perspective: 1400px;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  background: rgba(18, 28, 45, 0.55);
+  box-shadow:
+    0 34px 90px color-mix(in srgb, var(--accent) 30%, rgba(0, 0, 0, 0.3)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform 160ms ease-out, box-shadow 500ms ease;
+}
+
+.card::before {
+  inset: -24% auto auto -18%;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 52%, transparent), transparent 66%);
+  opacity: 0.48;
+}
+
+.card::after {
+  right: -16%;
+  bottom: -26%;
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.24), transparent 68%);
+  opacity: 0.72;
+}
+
+.card::before,
+.card::after {
+  position: absolute;
+  border-radius: 999px;
+  content: "";
+  pointer-events: none;
+}
+
+.card::before {
+  inset: -26% auto auto -18%;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 52%, transparent), transparent 68%);
+  opacity: 0.42;
+  transform: translate(calc(var(--px) * -22px), calc(var(--py) * -18px)) translateZ(-20px);
+}
+
+.card::after {
+  right: -18%;
+  bottom: -26%;
+  width: 430px;
+  height: 430px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.32), transparent 66%);
+  opacity: 0.55;
+  transform: translate(calc(var(--px) * -26px), calc(var(--py) * -18px)) translateZ(-16px);
+}
+
+.medicalBackdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translate(calc(var(--px) * -12px), calc(var(--py) * -10px)) translateZ(-32px);
+}
+
+.grid,
+.hexagons,
+.dna,
+.neurons,
+.molecules {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+}
+
+.grid {
+  background-image:
+    linear-gradient(rgba(125, 211, 252, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.2) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at 50% 48%, black 0 58%, transparent 78%);
+}
+
+.hexagons {
+  background:
+    radial-gradient(circle at 18% 28%, rgba(125, 211, 252, 0.34) 0 2px, transparent 3px),
+    radial-gradient(circle at 82% 22%, rgba(125, 211, 252, 0.28) 0 2px, transparent 3px),
+    linear-gradient(30deg, transparent 0 46%, rgba(125, 211, 252, 0.22) 47% 48%, transparent 49%),
+    linear-gradient(150deg, transparent 0 46%, rgba(125, 211, 252, 0.14) 47% 48%, transparent 49%);
+  background-size: 110px 96px;
+  animation: drift 22s linear infinite;
+}
+
+.dna {
+  left: -20px;
+  top: 40px;
+  width: 116px;
+  height: 430px;
+  opacity: 0.18;
+  background:
+    radial-gradient(circle at 18px 18px, #7dd3fc 0 5px, transparent 6px),
+    radial-gradient(circle at 92px 46px, #38bdf8 0 5px, transparent 6px),
+    linear-gradient(100deg, transparent 0 45%, rgba(125, 211, 252, 0.5) 46% 49%, transparent 50%),
+    linear-gradient(80deg, transparent 0 52%, rgba(125, 211, 252, 0.32) 53% 56%, transparent 57%);
+  background-size: 116px 72px;
+  border-radius: 999px;
+  animation: dnaScroll 16s linear infinite;
+}
+
+.neurons {
+  background:
+    radial-gradient(circle at 64% 28%, rgba(255, 255, 255, 0.5) 0 3px, transparent 4px),
+    radial-gradient(circle at 78% 42%, rgba(255, 255, 255, 0.38) 0 3px, transparent 4px),
+    radial-gradient(circle at 57% 56%, rgba(255, 255, 255, 0.35) 0 3px, transparent 4px),
+    linear-gradient(32deg, transparent 0 52%, rgba(125, 211, 252, 0.34) 53% 54%, transparent 55%),
+    linear-gradient(126deg, transparent 0 42%, rgba(125, 211, 252, 0.24) 43% 44%, transparent 45%);
+}
+
+.molecules {
+  right: 22px;
+  bottom: 30px;
+  width: 190px;
+  height: 190px;
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 26% 28%, #7dd3fc 0 6px, transparent 7px),
+    radial-gradient(circle at 76% 34%, #7dd3fc 0 5px, transparent 6px),
+    radial-gradient(circle at 52% 76%, #38bdf8 0 6px, transparent 7px),
+    linear-gradient(28deg, transparent 0 48%, rgba(125, 211, 252, 0.35) 49% 50%, transparent 51%);
+  animation: moleculeFloat 9s ease-in-out infinite;
+}
+
+.particleOne,
+.particleTwo,
+.particleThree {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 70%, white);
+  opacity: 0.45;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 80%, transparent);
+  animation: particleFloat 6s ease-in-out infinite;
+}
+
+.particleOne { left: 18%; top: 22%; }
+.particleTwo { left: 72%; top: 18%; animation-delay: 1.4s; }
+.particleThree { left: 78%; top: 72%; animation-delay: 2.2s; }
+
+.productImageWrap {
+  position: absolute;
+  z-index: 3;
+  top: 72px;
+  left: 50%;
+  width: 70%;
+  height: 64%;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transform: translateX(-50%) translate(calc(var(--px) * 18px), calc(var(--py) * 14px)) translateZ(60px);
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border-radius: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.32)) saturate(1.06) contrast(1.04);
+  animation: productFloat 4.8s ease-in-out infinite;
+}
+
+.productCaption {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 4;
+  max-width: 260px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(8, 18, 32, 0.68);
+  color: #f8fafc;
+  backdrop-filter: blur(16px);
+}
+
+.productBadge {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #bae6fd;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.productCaption p {
+  color: rgba(248, 250, 252, 0.9);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.floatCard {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 315px;
+  padding: 18px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  color: #0f172a;
+  backdrop-filter: blur(18px);
+  transform: translate(calc(var(--px) * 30px), calc(var(--py) * 24px)) translateZ(100px);
+}
+
+.floatCard h3,
+.mobileCards h3 {
+  color: #071428;
+  font-size: 1rem;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
+.floatCard p,
+.mobileCards p {
+  display: -webkit-box;
+  margin-top: 5px;
+  overflow: hidden;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 750;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.float1 {
+  top: 56px;
+  left: 34px;
+  transform: rotate(-6deg) translate(calc(var(--px) * 30px), calc(var(--py) * 24px)) translateZ(100px);
+}
+
+.float2 {
+  right: 32px;
+  bottom: 72px;
+  transform: rotate(5deg) translate(calc(var(--px) * 38px), calc(var(--py) * 30px)) translateZ(110px);
+}
+
+.float3 {
+  left: 122px;
+  bottom: 34px;
+  transform: rotate(-3deg) translate(calc(var(--px) * 34px), calc(var(--py) * 26px)) translateZ(104px);
+}
+
+.medicineIcon {
+  position: relative;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 16%, white);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.medicineIcon::before {
+  position: absolute;
+  inset: 15px 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) 0 50%, #ffffff 50% 100%);
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--accent) 22%, transparent);
+  content: "";
+  transform: rotate(-24deg);
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 8;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e0f2fe;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(14px);
+  transform: translateY(-50%);
+  transition: box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.arrow:hover {
+  background: rgba(14, 165, 233, 0.22);
+  color: #ffffff;
+  box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 58%, transparent);
+  transform: translateY(-50%) scale(1.03);
+}
+
+.prev { left: 20px; }
+.next { right: 20px; }
+
+.dots {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translateX(-50%);
+}
+
+.dots button {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(203, 213, 225, 0.62);
+  transition: width 220ms ease, background 220ms ease, box-shadow 220ms ease;
+}
+
+.dots .activeDot {
+  width: 28px;
+  background: #0ea5e9;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.62);
+}
+
+.mobileCards {
+  display: none;
+}
+
+@keyframes productFloat {
+  0%, 100% { transform: translateY(0) scale(1.04); }
+  50% { transform: translateY(-12px) scale(1.07); }
+}
+
+@keyframes drift {
+  to { background-position: 110px 96px; }
+}
+
+@keyframes dnaScroll {
+  to { background-position: 0 144px; }
+}
+
+@keyframes moleculeFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.3; }
+  50% { transform: translate3d(12px, -18px, 0); opacity: 0.62; }
+}
+
+@media (max-width: 1180px) {
+  .scene {
+    width: min(680px, 100%);
+    height: 500px;
+    margin: 0 auto;
+  }
+
+  .floatCard {
+    max-width: 250px;
+    padding: 14px 16px;
+  }
+
+  .float3 {
+    left: 88px;
+  }
+}
+
+@media (max-width: 760px) {
+  .scene {
+    height: 540px;
+  }
+
+  .card {
+    border-radius: 22px;
+  }
+
+  .productImageWrap {
+    top: 48px;
+    width: 86%;
+    height: 54%;
+  }
+
+  .productCaption {
+    right: 10px;
+    bottom: 10px;
+    max-width: 220px;
+  }
+
+  .floatCard {
+    display: none;
+  }
+
+  .mobileCards {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 56px;
+    z-index: 7;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .mobileCards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobileCards article {
+    display: flex;
+    min-width: 236px;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+  }
+
+  .arrow {
+    top: 42%;
+  }
+}

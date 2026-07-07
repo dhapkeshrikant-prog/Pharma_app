@@ -1,8 +1,7 @@
-import { PointerEvent, ReactNode, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { CtaBanner } from '../components/CtaBanner';
 import { Icon } from '../components/Icon';
-import { ProductVisual } from '../components/ProductVisual';
 import { products } from '../data/products';
 import type { Product, Translation } from '../types';
 
@@ -16,277 +15,182 @@ type HomePageProps = {
   t: Translation;
 };
 
+const heroLines = ['Trusted Medicines For', 'A Healthier Life.'];
+
 const FadeIn = ({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) => (
   <motion.div
     className={className}
-    initial={{ opacity: 0, y: 24 }}
+    initial={{ opacity: 0, y: 28 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-70px' }}
+    viewport={{ once: true, margin: '-90px' }}
     transition={{ duration: 0.55, delay, ease: 'easeOut' }}
   >
     {children}
   </motion.div>
 );
 
-export const HomePage = ({ activeSlide, onAbout, onContact, onDetail, onExplore, onSlide, t }: HomePageProps) => (
-  <main className="home-page w-full overflow-hidden bg-slate-50 dark:bg-slate-950">
-    <OpeningScene />
-    <Hero activeSlide={activeSlide} onContact={onContact} onExplore={onExplore} onSlide={onSlide} t={t} />
-    <StatsBand />
-    <ProductRange onExplore={onExplore} />
-    <FeaturedProducts onDetail={onDetail} t={t} />
-    <TrustGrid onAbout={onAbout} t={t} />
-    <Process />
-    <Testimonials />
-    <CtaBanner onContact={onContact} t={t} />
-  </main>
-);
+export const HomePage = ({ onAbout, onContact, onDetail, onExplore, t }: HomePageProps) => {
+  const { scrollYProgress } = useScroll();
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.18], [1, 0.82]);
+  const heroY = useTransform(scrollYProgress, [0, 0.18], [0, 24]);
 
-const OpeningScene = () => (
-  <motion.div
-    className="home-opening"
-    initial={{ opacity: 1 }}
-    animate={{ opacity: 0, pointerEvents: 'none' }}
-    transition={{ delay: 1.8, duration: 0.65, ease: 'easeInOut' }}
-  >
-    <motion.div
-      className="home-shop"
-      initial={{ y: 28, scale: 0.94, opacity: 0 }}
-      animate={{ y: 0, scale: 1, opacity: 1 }}
-      transition={{ duration: 0.75, ease: 'easeOut' }}
-    >
-      <div className="home-shop-sign">
-        <span>+</span>
-        <strong>SUKHAYA MEDICAL</strong>
-      </div>
-      <div className="home-shop-awning" />
-      <div className="home-shop-window">
-        <i />
-        <i />
-        <i />
-      </div>
-      <div className="home-shop-door" />
-    </motion.div>
-    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}>
-      Opening trusted healthcare solutions
-    </motion.p>
-  </motion.div>
-);
+  const categories = useMemo(() => {
+    const base = ['Tablets', 'Capsules', 'Syrups', 'Injections', 'Cardiac', 'Orthopedic', 'Nutraceuticals', 'Antibiotics', 'Gastro', 'Respiratory', 'Pediatric', 'View All'];
+    return [...base, ...base];
+  }, []);
 
-const Hero = ({ activeSlide, onContact, onExplore, onSlide, t }: {
-  activeSlide: number;
-  onContact: () => void;
-  onExplore: () => void;
-  onSlide: (index: number) => void;
-  t: Translation;
-}) => {
-  const heroProducts = products.slice(0, 6);
-  const currentIndex = activeSlide % heroProducts.length;
-  const currentProduct = heroProducts[currentIndex];
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const previous = () => onSlide(currentIndex === 0 ? heroProducts.length - 1 : currentIndex - 1);
-  const next = () => onSlide((currentIndex + 1) % heroProducts.length);
-
-  const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
-    if (touchStart === null) return;
-    const distance = event.clientX - touchStart;
-    if (Math.abs(distance) > 48) {
-      if (distance > 0) previous();
-      else next();
-    }
-    setTouchStart(null);
-  };
+  const showcaseProducts = useMemo(() => products.filter((product) => product.image), []);
+  const featuredProducts = useMemo(() => {
+    const preferred = ['upstrin-forte', 'dazer-cv', 'snofreez', 'boneaya', 'azaya-lb', 'panaya-40-dsr', 'cufreez-a'];
+    const picked = preferred.map((slug) => products.find((product) => product.slug === slug)).filter(Boolean) as Product[];
+    return [...picked, ...picked];
+  }, []);
 
   return (
-    <section className="home-hero relative min-h-[720px] px-4 pb-20 pt-10 md:pt-14" id="home">
-      <div className="home-medical-bg" aria-hidden="true">
-        <span className="home-dna" />
-        <span className="home-pill home-pill-a" />
-        <span className="home-pill home-pill-b" />
-        <span className="home-molecule" />
-      </div>
-
-      <div className="relative z-10 mx-auto grid max-w-[1480px] items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
-        <motion.div
-          className="max-w-2xl pt-8 lg:pt-12"
-          initial={{ opacity: 0, x: -28 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.25, duration: 0.7, ease: 'easeOut' }}
-        >
-          <span className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-4 py-2 text-xs font-black uppercase tracking-wide text-sky-800 ring-1 ring-sky-200 dark:bg-sky-950 dark:text-sky-200 dark:ring-sky-800">
-            <Icon name="check" className="h-4 w-4" /> WHO-GMP Certified Company
-          </span>
-          <h1 className="mt-7 text-4xl font-black leading-[1.05] text-slate-950 md:text-6xl lg:text-7xl dark:text-white">
-            Quality Medicines, <span className="text-blue-600">Healthier</span> Lives.
-          </h1>
-          <p className="mt-6 max-w-xl text-base font-medium leading-8 text-slate-600 md:text-lg dark:text-slate-300">
-            We are committed to manufacturing and delivering world-class pharmaceutical products that improve lives and build a healthier tomorrow.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <button className="inline-flex items-center gap-3 rounded-xl bg-blue-700 px-7 py-4 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition hover:-translate-y-1 hover:bg-blue-600" onClick={onExplore} type="button">
-              {t.exploreProducts} <Icon name="arrow" className="h-5 w-5" />
-            </button>
-            <button className="inline-flex items-center gap-3 rounded-xl bg-white px-7 py-4 text-sm font-black text-slate-900 shadow-lg ring-1 ring-slate-200 transition hover:-translate-y-1 hover:text-blue-700 dark:bg-slate-900 dark:text-white dark:ring-slate-800" onClick={onContact} type="button">
-              {t.contactUs} <Icon name="contact" className="h-5 w-5" />
-            </button>
+    <main className="pharma-home w-full overflow-hidden bg-white dark:bg-slate-950">
+      <OpeningScene />
+      <section className="pharma-hero" id="home">
+        <MedicalBackground />
+        <motion.div className="pharma-hero-inner" style={{ opacity: heroOpacity, y: heroY }}>
+          <div className="pharma-hero-copy">
+            <motion.span className="pharma-eyebrow" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+              Premium pharmaceutical care
+            </motion.span>
+            <h1>
+              {heroLines.map((line, index) => (
+                <motion.span key={line} initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 + index * 0.16, duration: 0.62, ease: 'easeOut' }}>
+                  {line}
+                </motion.span>
+              ))}
+            </h1>
+            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.44, duration: 0.55 }}>
+              SUKHAYA Pharmaceutical delivers high-quality, safe, and affordable healthcare products with a modern product experience designed for trust and fast inquiry.
+            </motion.p>
+            <motion.div className="pharma-hero-actions" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.56, duration: 0.55 }}>
+              <button className="pharma-primary" onClick={onExplore} type="button">Explore Products <Icon name="arrow" className="h-4 w-4" /></button>
+              <button className="pharma-secondary" onClick={onContact} type="button">Contact Us</button>
+            </motion.div>
           </div>
-          <div className="mt-10 grid max-w-xl grid-cols-2 gap-3 rounded-2xl bg-white/85 p-4 shadow-xl shadow-slate-200/70 ring-1 ring-slate-200 backdrop-blur md:grid-cols-4 dark:bg-slate-900/85 dark:shadow-none dark:ring-slate-800">
-            {['WHO-GMP Certified', 'ISO 9001:2015', 'Quality Assurance', 'Timely Delivery'].map((item) => (
-              <div className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200" key={item}>
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                  <Icon name="check" className="h-4 w-4" />
-                </span>
-                {item}
-              </div>
-            ))}
-          </div>
+          <HeroShowcase products={showcaseProducts} onDetail={onDetail} />
         </motion.div>
+      </section>
 
-        <motion.div
-          className="relative min-h-[470px] md:min-h-[610px]"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.7, ease: 'easeOut' }}
-          onPointerDown={(event) => setTouchStart(event.clientX)}
-          onPointerUp={onPointerUp}
-        >
-          <button className="home-slider-btn left-0 md:left-3" onClick={previous} type="button" aria-label="Previous product">
-            <Icon name="arrow" className="rotate-180" />
-          </button>
-          <div className="home-product-stage">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentProduct.slug}
-                className="home-product-box"
-                initial={{ opacity: 0, rotateY: -20, y: 30 }}
-                animate={{ opacity: 1, rotateY: 0, y: 0 }}
-                exit={{ opacity: 0, rotateY: 20, y: -10 }}
-                transition={{ duration: 0.45, ease: 'easeOut' }}
-              >
-                {currentProduct.image ? (
-                  <img src={currentProduct.image} alt={currentProduct.imageAlt} />
-                ) : (
-                  <ProductVisual compact product={currentProduct} />
-                )}
-                <div className="home-product-label">
-                  <strong>{currentProduct.name}</strong>
-                  <span>{currentProduct.composition}</span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <button className="home-slider-btn right-0 md:right-3" onClick={next} type="button" aria-label="Next product">
-            <Icon name="arrow" />
-          </button>
-          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-2">
-            {heroProducts.map((product, idx) => (
-              <button
-                aria-label={`Show ${product.name}`}
-                className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-blue-700' : 'w-2 bg-slate-300 dark:bg-slate-700'}`}
-                key={product.slug}
-                onClick={() => onSlide(idx)}
-                type="button"
-              />
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </section>
+      <CategoryRibbon categories={categories} onExplore={onExplore} />
+      <FeaturedCarousel products={featuredProducts} onDetail={onDetail} />
+      <StatsBand />
+      <WhyChoose onAbout={onAbout} />
+      <CtaBanner onContact={onContact} t={t} />
+    </main>
   );
 };
 
-const StatsBand = () => (
-  <FadeIn className="relative z-20 mx-auto -mt-12 max-w-[1240px] px-4">
-    <div className="grid gap-4 rounded-2xl bg-white p-5 shadow-2xl shadow-slate-200/80 ring-1 ring-slate-200 md:grid-cols-4 dark:bg-slate-900 dark:shadow-none dark:ring-slate-800">
-      {[
-        ['15+', 'Years of Experience', 'in Pharma Industry'],
-        ['200+', 'Quality Products', 'Manufactured'],
-        ['25+', 'Countries', 'Global Presence'],
-        ['1M+', 'Happy Patients', 'Every Year'],
-      ].map(([value, title, text], idx) => (
-        <div className="flex items-center gap-4 border-slate-100 p-3 md:border-r last:border-r-0 dark:border-slate-800" key={title}>
-          <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full text-lg font-black ${idx === 1 ? 'bg-orange-100 text-orange-600' : idx === 2 ? 'bg-emerald-100 text-emerald-600' : idx === 3 ? 'bg-violet-100 text-violet-600' : 'bg-blue-100 text-blue-700'}`}>
-            {value.replace('+', '')}
-          </span>
-          <div>
-            <strong className="block text-3xl font-black text-blue-700 dark:text-blue-300">{value}</strong>
-            <span className="block text-sm font-black text-slate-900 dark:text-white">{title}</span>
-            <small className="text-xs font-semibold text-slate-500">{text}</small>
-          </div>
+const HeroShowcase = ({ products, onDetail }: { products: Product[]; onDetail: (product: Product) => void }) => {
+  const marquee = [...products, ...products];
+  return (
+    <motion.div className="pharma-showcase" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.18, duration: 0.68 }}>
+      <div className="pharma-showcase-orbit" />
+      <motion.div className="pharma-product-track" drag="x" dragConstraints={{ left: -900, right: 0 }}>
+        <div className="pharma-product-marquee">
+          {marquee.map((product, index) => (
+            <ProductCard key={`${product.slug}-${index}`} product={product} onDetail={onDetail} compact />
+          ))}
         </div>
+      </motion.div>
+      {products.slice(0, 5).map((product, index) => (
+        <button className={`pharma-floating-card float-${index + 1}`} key={product.slug} onClick={() => onDetail(product)} type="button">
+          <img src={product.image} alt={product.imageAlt ?? product.name} loading="lazy" />
+          <span>
+            <strong>{product.name}</strong>
+            <small>{product.category}</small>
+          </span>
+        </button>
       ))}
+    </motion.div>
+  );
+};
+
+const ProductCard = ({ product, onDetail, compact = false }: { product: Product; onDetail: (product: Product) => void; compact?: boolean }) => (
+  <article className={`pharma-product-card ${compact ? 'compact' : ''}`}>
+    <div className="pharma-product-image">
+      <img src={product.image} alt={product.imageAlt ?? product.name} loading="lazy" />
+    </div>
+    <h3>{product.name}</h3>
+    <p>{product.category}</p>
+    <small>{product.composition || product.description}</small>
+    {!compact && <button onClick={() => onDetail(product)} type="button">View Details</button>}
+  </article>
+);
+
+const CategoryRibbon = ({ categories, onExplore }: { categories: string[]; onExplore: () => void }) => (
+  <FadeIn className="pharma-category-section">
+    <div className="pharma-section-heading">
+      <h2>Explore by Category</h2>
+      <button onClick={onExplore} type="button">View All</button>
+    </div>
+    <div className="pharma-category-ribbon">
+      <motion.div className="pharma-category-track" drag="x" dragConstraints={{ left: -700, right: 0 }}>
+        {categories.map((category, index) => (
+          <button className="pharma-category-pill" key={`${category}-${index}`} onClick={onExplore} type="button">
+            <span>{category.slice(0, 2)}</span>
+            <strong>{category}</strong>
+          </button>
+        ))}
+      </motion.div>
     </div>
   </FadeIn>
 );
 
-const ProductRange = ({ onExplore }: { onExplore: () => void }) => (
-  <section className="mx-auto max-w-[1240px] px-4 py-14">
-    <SectionTitle eyebrow="Our Product Range" title="Healthcare Solutions for Every Need" />
-    <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-      {[
-        ['Antibiotics', 'Powerful infection fighters'],
-        ['Pain Killer', 'Fast relief from pain and fever'],
-        ['Calcium', 'Stronger bones, better life'],
-        ['Protein & Nutritional', 'Complete nutrition for all'],
-        ['PPI', 'Gastric and acid management'],
-        ['All Products', 'View complete range'],
-      ].map(([title, text], idx) => (
-        <button className="home-range-card" key={title} onClick={idx === 5 ? onExplore : undefined} type="button">
-          <span>{['+', 'Rx', 'Ca', 'N', 'P', '::'][idx]}</span>
-          <strong>{title}</strong>
-          <small>{text}</small>
-        </button>
-      ))}
-    </div>
-  </section>
-);
-
-const FeaturedProducts = ({ onDetail, t }: { onDetail: (product: Product) => void; t: Translation }) => (
-  <section className="mx-auto max-w-[1400px] px-4 pb-14">
-    <div className="rounded-2xl bg-white p-5 shadow-xl shadow-slate-200/70 ring-1 ring-slate-200 dark:bg-slate-900 dark:shadow-none dark:ring-slate-800">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3 text-center md:text-left">
-        <SectionTitle eyebrow={t.featuredEyebrow} title="Our Best Selling Medicines" />
-        <button className="inline-flex items-center gap-2 text-sm font-black text-blue-700 dark:text-blue-300" type="button">
-          View All Products <Icon name="arrow" className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {products.slice(0, 6).map((product, idx) => (
-          <FadeIn delay={idx * 0.04} key={product.slug}>
-            <article className="home-feature-card">
-              <div className="home-feature-image">
-                {product.image ? <img src={product.image} alt={product.imageAlt} /> : <ProductVisual compact product={product} />}
-              </div>
-              <h3>{product.name}</h3>
-              <p>{product.composition}</p>
-              <button onClick={() => onDetail(product)} type="button">
-                {t.viewDetails} <Icon name="arrow" className="h-4 w-4" />
-              </button>
-            </article>
-          </FadeIn>
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
-const TrustGrid = ({ onAbout, t }: { onAbout: () => void; t: Translation }) => (
-  <section className="mx-auto grid max-w-[1240px] gap-6 px-4 py-10 lg:grid-cols-[0.9fr_1.6fr]">
+const FeaturedCarousel = ({ products, onDetail }: { products: Product[]; onDetail: (product: Product) => void }) => (
+  <section className="pharma-featured">
     <FadeIn>
-      <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-300">{t.aboutEyebrow}</p>
-      <h2 className="mt-3 text-3xl font-black leading-tight text-slate-950 md:text-4xl dark:text-white">We Care for Your Health and Trust</h2>
-      <p className="mt-5 text-sm font-medium leading-7 text-slate-600 dark:text-slate-300">{t.aboutText}</p>
-      <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20" onClick={onAbout} type="button">
-        {t.learnMore} <Icon name="arrow" className="h-4 w-4" />
-      </button>
+      <div className="pharma-section-heading">
+        <h2>Featured Products</h2>
+        <button type="button">Premium Catalogue</button>
+      </div>
     </FadeIn>
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {['Quality Assurance', 'Advanced Technology', 'Expert Team', 'Customer Focused'].map((item, idx) => (
-        <FadeIn delay={idx * 0.06} key={item}>
-          <div className="home-trust-card">
-            <span><Icon name={idx === 1 ? 'products' : idx === 3 ? 'contact' : 'check'} /></span>
-            <strong>{item}</strong>
-            <small>{['Strict quality control at every step', 'Modern manufacturing facilities', 'Experienced professionals committed to care', 'Building long-term relationships'][idx]}</small>
+    <div className="pharma-featured-ribbon">
+      <motion.div className="pharma-featured-track" drag="x" dragConstraints={{ left: -900, right: 0 }}>
+        {products.map((product, index) => (
+          <ProductCard key={`${product.slug}-featured-${index}`} product={product} onDetail={onDetail} />
+        ))}
+      </motion.div>
+    </div>
+  </section>
+);
+
+const CountUp = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    let frame = 0;
+    const total = 42;
+    const timer = window.setInterval(() => {
+      frame += 1;
+      setCount(Math.round((value * frame) / total));
+      if (frame >= total) window.clearInterval(timer);
+    }, 24);
+    return () => window.clearInterval(timer);
+  }, [inView, value]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+};
+
+const StatsBand = () => (
+  <section className="pharma-stats-wrap">
+    <div className="pharma-stats">
+      {[
+        [150, '+', 'Quality Products'],
+        [10, '+', 'Therapeutic Areas'],
+        [500, '+', 'Happy Customers'],
+        [100, '%', 'Quality Assurance'],
+      ].map(([value, suffix, label]) => (
+        <FadeIn key={label as string}>
+          <div>
+            <strong><CountUp value={value as number} suffix={suffix as string} /></strong>
+            <small>{label}</small>
           </div>
         </FadeIn>
       ))}
@@ -294,44 +198,60 @@ const TrustGrid = ({ onAbout, t }: { onAbout: () => void; t: Translation }) => (
   </section>
 );
 
-const Process = () => (
-  <section className="mx-auto max-w-[1240px] px-4 py-12">
-    <SectionTitle eyebrow="Our Manufacturing Process" title="From Raw Material to Quality Medicine" />
-    <div className="home-process mt-10">
-      {['Raw Material Selection', 'Quality Testing', 'Advanced Manufacturing', 'Packaging', 'Quality Check', 'Timely Delivery'].map((item, idx) => (
-        <div className="home-process-step" key={item}>
-          <span>{idx + 1}</span>
-          <strong>{item}</strong>
-          <small>{['High quality raw materials only', 'Strict testing at all stages', 'State-of-the-art machines', 'Safe, hygienic and secure packaging', 'Final quality verification', 'On-time delivery across the globe'][idx]}</small>
-        </div>
-      ))}
+const WhyChoose = ({ onAbout }: { onAbout: () => void }) => (
+  <section className="pharma-why">
+    <div className="pharma-section-heading">
+      <h2>Why Choose Sukhaya Pharma?</h2>
+      <button onClick={onAbout} type="button">About Us</button>
     </div>
-  </section>
-);
-
-const Testimonials = () => (
-  <section className="mx-auto max-w-[1240px] px-4 pb-12">
-    <SectionTitle eyebrow="What Our Partners Say" title="Trusted by Healthcare Professionals" />
-    <div className="mt-8 grid gap-4 md:grid-cols-3">
+    <div className="pharma-why-grid">
       {[
-        ['Dr. Rajesh Sharma', 'Healthcare Professional', 'Sukhaya Pharmaceuticals has been our trusted partner for years. Their quality and commitment are exceptional.'],
-        ['Dr. Anjali Verma', 'MBBS, MD', 'Their wide range of products and timely delivery help us serve our patients better every day.'],
-        ['PharmaCare Distributors', 'Business Partner', 'Excellent quality medicines with affordable pricing. Highly recommended for all distributors.'],
-      ].map(([name, role, quote]) => (
-        <article className="home-testimonial" key={name}>
-          <b>``</b>
-          <p>{quote}</p>
-          <strong>{name}</strong>
-          <small>{role}</small>
-        </article>
+        ['Quality Assurance', 'Carefully presented products with consistent catalogue information.'],
+        ['Affordable Healthcare', 'A practical range designed for accessible healthcare needs.'],
+        ['Modern Experience', 'Fast search, responsive cards, and premium product discovery.'],
+        ['Patient First', 'Simple inquiry paths for customers and healthcare partners.'],
+      ].map(([title, text], index) => (
+        <FadeIn delay={index * 0.06} key={title}>
+          <article>
+            <span><Icon name="check" /></span>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </article>
+        </FadeIn>
       ))}
     </div>
   </section>
 );
 
-const SectionTitle = ({ eyebrow, title }: { eyebrow: string; title: string }) => (
-  <div className="mx-auto max-w-2xl text-center">
-    <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-300">{eyebrow}</p>
-    <h2 className="mt-2 text-2xl font-black text-slate-950 md:text-3xl dark:text-white">{title}</h2>
+const MedicalBackground = () => (
+  <div className="pharma-medical-bg" aria-hidden="true">
+    <span className="dna dna-a" />
+    <span className="dna dna-b" />
+    <span className="mol mol-a" />
+    <span className="mol mol-b" />
+    <span className="capsule capsule-a" />
+    <span className="capsule capsule-b" />
+    <span className="cross cross-a" />
+    {Array.from({ length: 16 }).map((_, index) => <i key={index} />)}
   </div>
 );
+
+const OpeningScene = () => {
+  const [visible, setVisible] = useState(() => sessionStorage.getItem('sukhayaIntroSeen') !== 'true');
+  if (!visible) return null;
+
+  return (
+    <motion.div
+      className="home-opening"
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 0, pointerEvents: 'none' }}
+      transition={{ delay: 1.1, duration: 0.45 }}
+      onAnimationComplete={() => {
+        sessionStorage.setItem('sukhayaIntroSeen', 'true');
+        setVisible(false);
+      }}
+    >
+      <div className="home-ref-loader"><span /><strong>SUKHAYA PHARMA</strong></div>
+    </motion.div>
+  );
+};

@@ -1,0 +1,13 @@
+<svg width="520" height="160" viewBox="0 0 520 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(20 17)">
+    <circle cx="55" cy="55" r="33" fill="#0EA5E9"/>
+    <circle cx="55" cy="55" r="22" fill="#fff"/>
+    <circle cx="55" cy="55" r="14" fill="#0EA5E9"/>
+    <circle cx="55" cy="55" r="6" fill="#F97316"/>
+    <path d="M55 5c5 12 8 22 8 32h-16c0-10 3-20 8-32Z" fill="#F97316"/>
+    <path d="M23 16c12 5 20 10 27 17L39 44c-7-7-12-15-16-28Z" fill="#F97316"/>
+    <path d="M87 16c-4 13-9 21-16 28L60 33c7-7 15-12 27-17Z" fill="#0EA5E9"/>
+  </g>
+  <text x="112" y="63" fill="#0EA5E9" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="900" letter-spacing="1">SUKHAYA</text>
+  <text x="115" y="98" fill="#F97316" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="800">Committed to Health Care</text>
+</svg>
