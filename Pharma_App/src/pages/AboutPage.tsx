@@ -134,13 +134,14 @@ export const AboutPage = ({ t }: { t: Translation }) => (
         </FadeUp>
         
         <FadeUp delay={0.2}>
-          <figure className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 h-[420px] lg:h-[500px]">
+          <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 h-[420px] lg:h-[500px] flex items-center justify-center bg-gradient-to-tr from-slate-100 to-sky-100/50 dark:from-slate-900 dark:to-slate-800 relative group p-12">
+            <div className="absolute inset-0 bg-sky-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             <img
-              src="https://images.unsplash.com/photo-1581093458791-9d42e3c5128f?auto=format&fit=crop&w=1200&q=80"
-              alt="Modern pharmaceutical laboratory and quality workspace"
-              className="w-full h-full object-cover"
+              src="/sukhaya-logo.svg"
+              alt="Sukhaya Logo"
+              className="max-h-[60%] max-w-[60%] object-contain filter drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
             />
-          </figure>
+          </div>
         </FadeUp>
       </div>
     </section>

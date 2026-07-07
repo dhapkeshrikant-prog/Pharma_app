@@ -19,6 +19,16 @@ export type Product = {
   accent: string;
   image?: string;
   imageAlt?: string;
+  translations?: Record<string, {
+    category?: string;
+    description?: string;
+    composition?: string;
+    indications?: string;
+    benefits?: string;
+    dosage?: string;
+    storage?: string;
+    packaging?: string;
+  }>;
 };
 
 export type Translation = {
@@ -61,4 +71,8 @@ export type Translation = {
   newsletter: string;
   newsletterText: string;
   subscribe: string;
+  exploreByCategory: string;
+  whyChooseTitle: string;
+  whyChooseItems: string[][];
+  viewAll: string;
 };

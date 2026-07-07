@@ -12,13 +12,30 @@ type ProductsPageProps = {
 export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
   const [filter, setFilter] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const categories = useMemo(() => [
-    { label: 'All', slug: null as string | null },
-    ...Array.from(new Map(products.map((product) => [product.categorySlug ?? product.category, {
-      label: product.category,
-      slug: product.categorySlug ?? product.category.toLowerCase().replace(/\s+/g, '-'),
-    }])).values()).sort((a, b) => a.label.localeCompare(b.label)),
-  ], [products]);
+
+  const language = useMemo(() => {
+    const isHi = t.languageLabel === 'भाषा' && t.nav.about === 'हमारे बारे में';
+    const isMr = t.languageLabel === 'भाषा' && t.nav.about === 'आमच्याबद्दल';
+    return isHi ? 'hi' : isMr ? 'mr' : 'en';
+  }, [t]);
+
+  const categories = useMemo(() => {
+    const allLabel = language === 'hi' ? 'सभी' : language === 'mr' ? 'सर्व' : 'All';
+    const map = new Map<string, { label: string; slug: string | null }>();
+    
+    products.forEach((product) => {
+      const slug = product.categorySlug ?? product.category.toLowerCase().replace(/\s+/g, '-');
+      const label = product.translations?.[language]?.category ?? product.category;
+      if (!map.has(slug)) {
+        map.set(slug, { label, slug });
+      }
+    });
+
+    return [
+      { label: allLabel, slug: null as string | null },
+      ...Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label)),
+    ];
+  }, [products, language]);
 
   useEffect(() => {
     const applyLocation = () => {
@@ -53,11 +70,18 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
   const filtered = products.filter((p) => {
     const matchesCategory = !filter || p.categorySlug?.toLowerCase() === filter || p.slug?.toLowerCase() === filter;
     const query = search.toLowerCase();
+    
+    const translation = p.translations?.[language];
+    const category = translation?.category ?? p.category;
+    const composition = translation?.composition ?? p.composition;
+    const description = translation?.description ?? p.description;
+    const indications = translation?.indications ?? p.indications;
+    
     const matchesSearch = !query ||
       p.name.toLowerCase().includes(query) ||
-      p.composition.toLowerCase().includes(query) ||
-      p.category.toLowerCase().includes(query) ||
-      p.indications.toLowerCase().includes(query) ||
+      composition.toLowerCase().includes(query) ||
+      category.toLowerCase().includes(query) ||
+      indications.toLowerCase().includes(query) ||
       p.ingredients.some((ingredient) => ingredient.toLowerCase().includes(query));
     return matchesCategory && matchesSearch;
   });
@@ -220,50 +244,57 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
         animate="show"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7"
       >
-        {filtered.map((product) => (
-          <motion.article
-            variants={itemVariants}
-            className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-sky-300 dark:hover:border-sky-700 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full cursor-pointer"
-            key={product.name}
-            onClick={() => onDetail(product)}
-          >
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl h-48 mb-5 flex items-center justify-center p-4 relative overflow-hidden shrink-0">
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `radial-gradient(circle at center, ${product.color}18, transparent 70%)` }} />
-              {product.image ? (
-                <img
-                  src={product.image}
-                  alt={product.imageAlt}
-                  className="max-h-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-500"
-                />
-              ) : (
-                <ProductVisual compact product={product} />
-              )}
-            </div>
+        {filtered.map((product) => {
+          const translation = product.translations?.[language];
+          const category = translation?.category ?? product.category;
+          const composition = translation?.composition ?? product.composition;
+          const description = translation?.description ?? product.description;
 
-            <div className="flex-1 flex flex-col">
-              {/* Category Badge */}
-              <span
-                className="self-start mb-2 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
-                style={{ background: product.accent, color: product.color }}
-              >
-                {product.category}
-              </span>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-tight">
-                {product.name}
-              </h3>
-              <p className="text-sm font-semibold text-sky-600 dark:text-sky-400 mb-3 line-clamp-1">{product.composition}</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-5 flex-1">{product.description}</p>
+          return (
+            <motion.article
+              variants={itemVariants}
+              className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-sky-300 dark:hover:border-sky-700 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full cursor-pointer"
+              key={product.name}
+              onClick={() => onDetail(product)}
+            >
+              <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl h-48 mb-5 flex items-center justify-center p-4 relative overflow-hidden shrink-0">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `radial-gradient(circle at center, ${product.color}18, transparent 70%)` }} />
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.imageAlt}
+                    className="max-h-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-500"
+                  />
+                ) : (
+                  <ProductVisual compact product={product} />
+                )}
+              </div>
 
-              <button
-                onClick={(e) => { e.stopPropagation(); onDetail(product); }}
-                type="button"
-                className="mt-auto w-full py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:border-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-400 transition-all text-sm"
-              >
-                {t.viewDetails}
-              </button>
-            </div>
-          </motion.article>
-        ))}
+              <div className="flex-1 flex flex-col">
+                {/* Category Badge */}
+                <span
+                  className="self-start mb-2 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+                  style={{ background: product.accent, color: product.color }}
+                >
+                  {category}
+                </span>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-tight">
+                  {product.name}
+                </h3>
+                <p className="text-sm font-semibold text-sky-600 dark:text-sky-400 mb-3 line-clamp-1">{composition}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-5 flex-1">{description}</p>
+
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDetail(product); }}
+                  type="button"
+                  className="mt-auto w-full py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:border-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-400 transition-all text-sm"
+                >
+                  {t.viewDetails}
+                </button>
+              </div>
+            </motion.article>
+          );
+        })}
       </motion.section>
 
       {/* Empty State */}

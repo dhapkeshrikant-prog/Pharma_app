@@ -77,7 +77,7 @@ export const Navbar = ({ language, onLanguage, onNavigate, onTheme, page, theme,
           <nav className="pharma-navbar-links">
             {navItems.map((item) => (
               item.key === 'products' ? (
-                <MegaMenu key={item.page} onNavigate={onNavigate} t={t} />
+                <MegaMenu key={item.page} onNavigate={onNavigate} t={t} isActive={page === 'products'} />
               ) : (
                 <button key={item.page} className={`pharma-nav-link ${page === item.page ? 'active' : ''}`} onClick={() => onNavigate(item.page)} type="button">
                   <span>{t.nav[item.key]}</span>
