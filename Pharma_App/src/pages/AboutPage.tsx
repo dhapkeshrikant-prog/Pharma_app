@@ -216,6 +216,8 @@ export const AboutPage = ({ t }: { t: Translation }) => (
       </div>
     </section>
 
+    {false && (
+    <>
     {/* Journey / Timeline */}
     <section className="bg-slate-900 dark:bg-slate-950 py-20">
       <div className="max-w-[1480px] mx-auto px-6">
@@ -317,6 +319,8 @@ export const AboutPage = ({ t }: { t: Translation }) => (
         </div>
       </div>
     </section>
+    </>
+    )}
 
   </main>
 );

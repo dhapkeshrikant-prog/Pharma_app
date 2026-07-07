@@ -1,7 +1,7 @@
 import type { Language, Translation } from '../types';
 
 const en: Translation = {
-  nav: { home: 'Home', about: 'About Us', products: 'Our Products', contact: 'Contact Us', help: 'Help' },
+  nav: { home: 'Home', about: 'About Us', products: 'Product', contact: 'Contact Us', help: 'Help', blog: 'Blog' },
   languageLabel: 'Language',
   heroBadge: 'WHO-GMP Certified Company',
   heroTitle: 'Trusted Medicines For A Healthier Life',
@@ -62,7 +62,7 @@ export const translations: Record<Language, Translation> = {
   en,
   hi: {
     ...en,
-    nav: { home: 'होम', about: 'हमारे बारे में', products: 'उत्पाद', contact: 'संपर्क', help: 'सहायता' },
+    nav: { home: 'होम', about: 'हमारे बारे में', products: 'उत्पाद', contact: 'संपर्क', help: 'सहायता', blog: 'Blog' },
     languageLabel: 'भाषा',
     heroBadge: 'WHO-GMP प्रमाणित कंपनी',
     heroTitle: 'स्वस्थ जीवन के लिए भरोसेमंद दवाएं',
@@ -108,7 +108,7 @@ export const translations: Record<Language, Translation> = {
   },
   mr: {
     ...en,
-    nav: { home: 'होम', about: 'आमच्याबद्दल', products: 'उत्पादने', contact: 'संपर्क', help: 'मदत' },
+    nav: { home: 'होम', about: 'आमच्याबद्दल', products: 'उत्पादने', contact: 'संपर्क', help: 'मदत', blog: 'Blog' },
     languageLabel: 'भाषा',
     heroBadge: 'WHO-GMP प्रमाणित कंपनी',
     heroTitle: 'निरोगी जीवनासाठी विश्वासार्ह औषधे',

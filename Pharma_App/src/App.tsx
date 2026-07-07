@@ -6,6 +6,7 @@ import { Navbar } from './components/Navbar';
 import { products } from './data/products';
 import { translations } from './i18n/translations';
 import { AboutPage } from './pages/AboutPage';
+import { BlogPage } from './pages/BlogPage';
 import { ContactPage } from './pages/ContactPage';
 import { HelpPage } from './pages/HelpPage';
 import { HomePage } from './pages/HomePage';
@@ -31,14 +32,6 @@ const App = () => {
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % 6);
-    }, 3200);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
@@ -59,8 +52,7 @@ const App = () => {
           setSelectedProduct(found);
           goTo('detail');
         }
-      } else if (hash.startsWith('category:') || ['all', 'tablets', 'capsules', 'syrups', 'nutraceuticals', 'dry-syrups', 'antibiotics', 'pain-killer', 'calcium-preparation', 'protein-powder', 'ppi', 'cough-syrup', 'anticold', 'antifungal-cream'].includes(hash)) {
-        // navigate to products page for category slugs
+      } else if (hash.startsWith('category:') || products.some((product) => product.categorySlug === hash)) {
         goTo('products');
       }
     };
@@ -165,6 +157,7 @@ const App = () => {
           {page === 'products' && <ProductsPage products={products} onDetail={openDetail} t={t} />}
           {page === 'contact' && <ContactPage onSubmit={onSubmit} submitted={submitted} t={t} />}
           {page === 'help' && <HelpPage onContact={() => goTo('contact')} t={t} />}
+          {page === 'blog' && <BlogPage onDetail={openDetail} />}
           {page === 'detail' && <ProductDetailPage product={selectedProduct} t={t} />}
         </motion.div>
       </AnimatePresence>
