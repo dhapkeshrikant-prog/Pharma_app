@@ -5,14 +5,30 @@ import { ProductVisual } from '../components/ProductVisual';
 import type { Product, Translation } from '../types';
 
 export const ProductDetailPage = ({ product, t }: { product: Product; t: Translation }) => {
+  const language = (() => {
+    const isHi = t.languageLabel === 'भाषा' && t.nav.about === 'हमारे बारे में';
+    const isMr = t.languageLabel === 'भाषा' && t.nav.about === 'आमच्याबद्दल';
+    return isHi ? 'hi' : isMr ? 'mr' : 'en';
+  })();
+
+  const translation = product.translations?.[language];
+  const localizedCategory = translation?.category ?? product.category;
+  const localizedComposition = translation?.composition ?? product.composition;
+  const localizedDescription = translation?.description ?? product.description;
+  const localizedIndications = translation?.indications ?? product.indications;
+  const localizedBenefits = translation?.benefits ?? product.benefits;
+  const localizedDosage = translation?.dosage ?? product.dosage;
+  const localizedStorage = translation?.storage ?? product.storage;
+  const localizedPackaging = translation?.packaging ?? product.packaging;
+
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.description,
+    description: localizedDescription,
     image: product.image ? window.location.origin + product.image : undefined,
     sku: product.slug || product.name,
-    category: product.category,
+    category: localizedCategory,
   };
   
   const openWhatsApp = () => {
@@ -39,7 +55,7 @@ export const ProductDetailPage = ({ product, t }: { product: Product; t: Transla
     <main className="min-h-screen pb-24">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       
-      <PageHero title={product.name} text={product.description} t={t} />
+      <PageHero title={product.name} text={localizedDescription} t={t} />
       
       <motion.section 
         variants={staggerContainer}
@@ -53,13 +69,13 @@ export const ProductDetailPage = ({ product, t }: { product: Product; t: Transla
             <ProductVisual product={product} />
           </div>
         </motion.div>
-
+ 
         {/* Center Column: Details */}
         <motion.div variants={fadeUp} className="lg:col-span-7 xl:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
           <div className="divide-y divide-slate-100 dark:divide-slate-800/50">
             <article className="pb-6">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t.detail.composition}</h3>
-              <p className="text-sky-600 dark:text-sky-400 font-semibold">{product.composition}</p>
+              <p className="text-sky-600 dark:text-sky-400 font-semibold">{localizedComposition}</p>
             </article>
             
             {product.ingredients.length > 0 && (
@@ -77,11 +93,11 @@ export const ProductDetailPage = ({ product, t }: { product: Product; t: Transla
             )}
             
             {[
-              [t.detail.indications, product.indications],
-              [t.detail.benefits, product.benefits],
-              [t.detail.dosage, product.dosage],
-              [t.detail.storage, product.storage],
-              [t.detail.packaging, product.packaging],
+              [t.detail.indications, localizedIndications],
+              [t.detail.benefits, localizedBenefits],
+              [t.detail.dosage, localizedDosage],
+              [t.detail.storage, localizedStorage],
+              [t.detail.packaging, localizedPackaging],
             ].map(([title, text]) => (
               text ? (
                 <article className="py-6" key={title}>
