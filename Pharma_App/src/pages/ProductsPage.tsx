@@ -3,11 +3,58 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ProductVisual } from '../components/ProductVisual';
 import type { Product, Translation } from '../types';
 
+// Banner fallback images mapped by category slug
+const BANNER_FALLBACKS: Record<string, string> = {
+  'pain-relief': '/banner/APS_Aya_Banner.png',
+  'antibiotics': '/banner/AZAYA_LB.png',
+  'orthopedic': '/banner/BONEAYA_tablet.png',
+  'respiratory': '/banner/Cufreez-A_banner.png',
+  'tablets': '/banner/KSHITIZ_banner.png',
+  'syrups': '/banner/CufreezSyrup.png',
+  'nutraceuticals': '/banner/NEURAYA_banner.png',
+  'gastro': '/banner/PANAYA_40.png',
+  'cold-cough': '/banner/Snofreez_Banner.png',
+  'neurology': '/banner/NEURAYA_banner.png',
+  'cardiac': '/banner/Dazer-cv_Banner.png',
+  'default': '/banner/KSHITIZ_banner.png',
+};
+
+const getBannerFallback = (product: Product): string => {
+  return BANNER_FALLBACKS[product.categorySlug ?? ''] ?? BANNER_FALLBACKS['default'];
+};
+
 type ProductsPageProps = {
   products: Product[];
   onDetail: (product: Product) => void;
   t: Translation;
 };
+
+// Component that renders product image with banner fallback
+const ProductImageWithFallback = ({ product }: { product: Product }) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = product.image && !imageFailed ? product.image : getBannerFallback(product);
+
+  if (product.image && !imageFailed) {
+    return (
+      <img
+        src={imageSrc}
+        alt={product.imageAlt ?? product.name}
+        className="max-h-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-500"
+        onError={() => setImageFailed(true)}
+      />
+    );
+  }
+
+  // Show banner image as fallback (covers full container with object-cover)
+  return (
+    <img
+      src={getBannerFallback(product)}
+      alt={`${product.name} - ${product.category}`}
+      className="w-full h-full object-cover rounded-xl opacity-90 group-hover:scale-105 transition-transform duration-500"
+    />
+  );
+};
+
 
 export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
   const [filter, setFilter] = useState<string | null>(null);
@@ -259,15 +306,7 @@ export const ProductsPage = ({ products, onDetail, t }: ProductsPageProps) => {
             >
               <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl h-48 mb-5 flex items-center justify-center p-4 relative overflow-hidden shrink-0">
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `radial-gradient(circle at center, ${product.color}18, transparent 70%)` }} />
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.imageAlt}
-                    className="max-h-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-500"
-                  />
-                ) : (
-                  <ProductVisual compact product={product} />
-                )}
+                <ProductImageWithFallback product={product} />
               </div>
 
               <div className="flex-1 flex flex-col">

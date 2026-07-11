@@ -1,9 +1,34 @@
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { CtaBanner } from '../components/CtaBanner';
 import { Icon } from '../components/Icon';
 import { products } from '../data/products';
 import type { Product, Translation } from '../types';
+
+const BANNERS = [
+  '/banner/APS_Aya_Banner.png',
+  '/banner/AZAYA_LB.png',
+  '/banner/BONEAYA2_M.png',
+  '/banner/BONEAYA_M.png',
+  '/banner/BONEAYA_Prega.png',
+  '/banner/BONEAYA_tablet.png',
+  '/banner/Cufreez-A_banner.png',
+  '/banner/CufreezSyrup.png',
+  '/banner/Cufreez_LS_Banner.png',
+  '/banner/DINCEF_banner.png',
+  '/banner/Dazer-cv_Banner.png',
+  '/banner/KSHITIZ GRO_Banner.png',
+  '/banner/KSHITIZ_banner.png',
+  '/banner/KSHITIZ_banner_pregnant_women.png',
+  '/banner/KSHITIZ_grow_banner.png',
+  '/banner/LICZONA_banner.png',
+  '/banner/NEURAYA_banner.png',
+  '/banner/PANAYA_40.png',
+  '/banner/PANAYA_OS_Banner.png',
+  '/banner/Snofreez2_Banner.png',
+  '/banner/Snofreez_Banner.png',
+  '/banner/Upstrin_banner.png',
+];
 
 type HomePageProps = {
   activeSlide: number;
@@ -70,7 +95,6 @@ export const HomePage = ({ onAbout, onContact, onDetail, onExplore, t }: HomePag
     return [...base, ...base];
   }, [t]);
 
-  const showcaseProducts = useMemo(() => products.filter((product) => product.image), []);
   const featuredProducts = useMemo(() => {
     const preferred = ['upstrin-forte', 'dazer-cv', 'snofreez', 'boneaya', 'azaya-lb', 'panaya-40-dsr', 'cufreez-a'];
     return preferred.map((slug) => products.find((product) => product.slug === slug)).filter(Boolean) as Product[];
@@ -102,7 +126,7 @@ export const HomePage = ({ onAbout, onContact, onDetail, onExplore, t }: HomePag
               <button className="pharma-secondary" onClick={onContact} type="button">{t.contactUs}</button>
             </motion.div>
           </div>
-          <HeroShowcase products={showcaseProducts} onDetail={onDetail} t={t} />
+          <BannerSlider />
         </motion.div>
       </section>
 
@@ -116,34 +140,89 @@ export const HomePage = ({ onAbout, onContact, onDetail, onExplore, t }: HomePag
   );
 };
 
-const HeroShowcase = ({ products, onDetail, t }: { products: Product[]; onDetail: (product: Product) => void; t: Translation }) => {
-  const marquee = [...products, ...products];
-  return (
-    <motion.div className="pharma-showcase" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.18, duration: 0.68 }}>
-      <div className="pharma-showcase-orbit" />
-      <motion.div className="pharma-product-track" drag="x" dragConstraints={{ left: -900, right: 0 }}>
-        <div className="pharma-product-marquee">
-          {marquee.map((product, index) => (
-            <ProductCard key={`${product.slug}-${index}`} product={product} onDetail={onDetail} t={t} compact />
-          ))}
-        </div>
-      </motion.div>
-      {products.slice(0, 5).map((product, index) => {
-        const isHi = t.languageLabel === 'भाषा' && t.nav.about === 'हमारे बारे में';
-        const isMr = t.languageLabel === 'भाषा' && t.nav.about === 'आमच्याबद्दल';
-        const language = isHi ? 'hi' : isMr ? 'mr' : 'en';
-        const localizedCategory = product.translations?.[language]?.category ?? product.category;
+const BannerSlider = () => {
+  const [current, setCurrent] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const total = BANNERS.length;
 
-        return (
-          <button className={`pharma-floating-card float-${index + 1}`} key={product.slug} onClick={() => onDetail(product)} type="button">
-            <img src={product.image} alt={product.imageAlt ?? product.name} loading="lazy" />
-            <span>
-              <strong>{product.name}</strong>
-              <small>{localizedCategory}</small>
-            </span>
-          </button>
-        );
-      })}
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % total);
+    }, 4000);
+  }, [total]);
+
+  useEffect(() => {
+    startTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [startTimer]);
+
+  const goTo = (index: number) => {
+    setCurrent((index + total) % total);
+    startTimer();
+  };
+
+  return (
+    <motion.div
+      className="pharma-banner-slider"
+      initial={{ opacity: 0, scale: 0.94 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.18, duration: 0.68 }}
+    >
+      <div className="pharma-banner-track">
+        {BANNERS.map((src, i) => (
+          <motion.img
+            key={src}
+            src={src}
+            alt={`Sukhaya Product Banner ${i + 1}`}
+            className="pharma-banner-slide"
+            style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 2 : 1 }}
+            animate={{ opacity: i === current ? 1 : 0, scale: i === current ? 1 : 1.04 }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
+            loading="lazy"
+          />
+        ))}
+      </div>
+
+      {/* Arrow Controls */}
+      <button
+        className="pharma-banner-arrow pharma-banner-arrow-left"
+        onClick={() => goTo(current - 1)}
+        type="button"
+        aria-label="Previous banner"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <button
+        className="pharma-banner-arrow pharma-banner-arrow-right"
+        onClick={() => goTo(current + 1)}
+        type="button"
+        aria-label="Next banner"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+
+      {/* Dots */}
+      <div className="pharma-banner-dots">
+        {BANNERS.map((_, i) => (
+          <button
+            key={i}
+            className={`pharma-banner-dot${i === current ? ' active' : ''}`}
+            onClick={() => goTo(i)}
+            type="button"
+            aria-label={`Go to banner ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Slide Counter */}
+      <div className="pharma-banner-counter">
+        <span>{current + 1}</span> / <span>{total}</span>
+      </div>
     </motion.div>
   );
 };

@@ -134,13 +134,49 @@ export const AboutPage = ({ t }: { t: Translation }) => (
         </FadeUp>
         
         <FadeUp delay={0.2}>
-          <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 h-[420px] lg:h-[500px] flex items-center justify-center bg-gradient-to-tr from-slate-100 to-sky-100/50 dark:from-slate-900 dark:to-slate-800 relative group p-12">
+          <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 h-[420px] lg:h-[500px] flex flex-col items-center justify-center bg-gradient-to-tr from-slate-50 via-sky-50/60 to-blue-100/40 dark:from-slate-900 dark:via-slate-900 dark:to-sky-950/40 relative group gap-6 p-10">
+            {/* Decorative background rings */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-56 h-56 bg-sky-400/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-orange-400/10 rounded-full blur-3xl" />
+            </div>
             <div className="absolute inset-0 bg-sky-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            <img
-              src="/sukhaya-logo.svg"
-              alt="Sukhaya Logo"
-              className="max-h-[60%] max-w-[60%] object-contain filter drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
-            />
+
+            {/* Logo image */}
+            <div className="relative z-10 flex flex-col items-center gap-5">
+              <div className="w-28 h-28 rounded-full bg-white dark:bg-slate-800 shadow-xl ring-4 ring-sky-100 dark:ring-sky-900 flex items-center justify-center p-3 transition-transform duration-500 group-hover:scale-110">
+                <img
+                  src="/sukhaya-logo.svg"
+                  alt="Sukhaya Pharmaceutical Logo"
+                  className="w-full h-full object-contain filter drop-shadow-md"
+                />
+              </div>
+
+              {/* Company name */}
+              <div className="text-center">
+                <h2 className="text-4xl font-black text-sky-600 dark:text-sky-400 tracking-widest uppercase leading-none mb-1" style={{ letterSpacing: '0.15em' }}>
+                  SUKHAYA
+                </h2>
+                <p className="text-base font-semibold text-orange-500 dark:text-orange-400 tracking-wide">
+                  Committed to Health Care
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-sky-400 to-transparent rounded-full" />
+
+              {/* Sub text */}
+              <p className="text-center text-sm text-slate-500 dark:text-slate-400 max-w-[220px] leading-relaxed font-medium">
+                Pharmaceutical Pvt. Ltd.
+              </p>
+
+              {/* Badges */}
+              <div className="flex gap-3 flex-wrap justify-center">
+                <span className="px-3 py-1 bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 rounded-full text-xs font-bold border border-sky-200 dark:border-sky-800">WHO-GMP</span>
+                <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-bold border border-emerald-200 dark:border-emerald-800">ISO 9001</span>
+                <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 rounded-full text-xs font-bold border border-orange-200 dark:border-orange-800">Est. 2009</span>
+              </div>
+            </div>
           </div>
         </FadeUp>
       </div>
